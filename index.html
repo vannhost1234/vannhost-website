@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Payment By Vann Host</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    /* ...[GAYA SAMA PERSIS DARI VERSI KAMU]... */
+    :root {
+      --primary: #00ffd5;
+      --accent: #0057ff;
+      --bg-glass: rgba(255, 255, 255, 0.06);
+      --blur: 24px;
+      --border-glow: rgba(0, 255, 213, 0.3);
+    }
+
+    * {
+      box-sizing: border-box;
+      padding: 0;
+      margin: 0;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #000;
+      color: white;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    canvas#matrixEffect {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .container {
+      position: relative;
+      z-index: 2;
+      padding: 40px 24px;
+      text-align: center;
+      max-width: 520px;
+      margin: 80px auto;
+      background: var(--bg-glass);
+      border-radius: 24px;
+      backdrop-filter: blur(var(--blur));
+      border: 1px solid var(--border-glow);
+      box-shadow: 0 30px 80px rgba(0, 255, 213, 0.15);
+      animation: fadeInUp 0.6s ease forwards;
+      opacity: 0;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        transform: translateY(30px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    /* Enhanced Glitch effect */
+    @keyframes glitch-anim {
+      0% {
+        transform: translate(2px, 2px) skew(0.5deg);
+        opacity: 1;
+        text-shadow: 2px 0 red, -2px 0 blue, 0 2px green;
+      }
+      20% {
+        transform: translate(-4px, -4px) skew(-1deg);
+        opacity: 0.7;
+        text-shadow: -2px 0 red, 4px 0 blue, 0 -2px green;
+      }
+      40% {
+        transform: translate(3px, -2px) skew(0.8deg);
+        opacity: 1;
+        text-shadow: 4px 0 red, -3px 0 blue, 0 3px green;
+      }
+      60% {
+        transform: translate(-3px, 4px) skew(-0.5deg);
+        opacity: 0.6;
+        text-shadow: -4px 0 red, 3px 0 blue, 0 -4px green;
+      }
+      80% {
+        transform: translate(2px, 3px) skew(0.5deg);
+        opacity: 1;
+        text-shadow: 3px 0 red, -2px 0 blue, 0 2px green;
+      }
+      100% {
+        transform: translate(0, 0) skew(0);
+        opacity: 1;
+        text-shadow: 2px 0 red, -2px 0 blue, 0 2px green;
+      }
+    }
+
+    h1.glitch {
+      font-size: 34px;
+      margin-bottom: 14px;
+      font-weight: 600;
+      color: var(--primary);
+      position: relative;
+      display: inline-block;
+      animation: glitch-anim 0.8s infinite;
+    }
+
+    h1.glitch::before,
+    h1.glitch::after {
+      content: attr(data-text);
+      position: absolute;
+      top: 0;
+      left: 0;
+      color: var(--accent);
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      animation: glitch-anim 0.8s infinite;
+    }
+
+    h1.glitch::before {
+      left: -2px;
+      text-shadow: -2px 0 red, 2px 0 blue, 0 2px green;
+    }
+
+    h1.glitch::after {
+      left: 2px;
+      text-shadow: 2px 0 red, -2px 0 blue, 0 -2px green;
+    }
+
+    .subtitle {
+      color: #ccc;
+      font-size: 16px;
+      margin-bottom: 28px;
+    }
+
+    .qris-img {
+      width: 280px;
+      border-radius: 14px;
+      cursor: pointer;
+      box-shadow: 0 10px 24px rgba(0, 255, 0, 0.25);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .qris-img:hover {
+      transform: scale(1.05);
+      box-shadow: 0 12px 30px rgba(0, 255, 0, 0.45);
+    }
+
+    .note {
+      font-size: 14px;
+      margin: 16px 0 28px;
+      color: #aaa;
+    }
+
+    .payment-method {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      margin: 12px 0;
+      gap: 10px;
+      transition: 0.3s ease;
+      backdrop-filter: blur(14px);
+    }
+
+    .payment-method:hover {
+      background: rgba(255, 255, 255, 0.08);
+      transform: scale(1.03);
+      box-shadow: 0 4px 20px rgba(0, 255, 0, 0.2);
+    }
+
+    .payment-method img {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+    }
+
+    .payment-method input {
+      flex: 1;
+      font-size: 16px;
+      background: transparent;
+      border: none;
+      color: white;
+      outline: none;
+    }
+
+    .payment-method button {
+      background: linear-gradient(to right, #00ff88, #00c6ff);
+      border: none;
+      color: white;
+      padding: 6px 16px;
+      font-weight: 600;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.2s ease;
+      box-shadow: 0 2px 10px rgba(0, 198, 255, 0.25);
+    }
+
+    .payment-method button:hover {
+      opacity: 0.85;
+    }
+
+    .main-button {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      font-size: 18px;
+      font-weight: 600;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: white;
+      border: none;
+      border-radius: 32px;
+      margin-top: 20px;
+      cursor: pointer;
+      transition: 0.3s ease;
+      box-shadow: 0 6px 18px var(--border-glow);
+    }
+
+    .main-button:hover {
+      opacity: 0.92;
+      transform: scale(1.02);
+    }
+
+    .main-button i {
+      margin-right: 8px;
+    }
+
+    .footer {
+      margin-top: 48px;
+      font-size: 13px;
+      color: #888;
+      text-align: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 20px;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.88);
+      backdrop-filter: blur(2px);
+    }
+
+    .modal-content {
+      margin: 5% auto;
+      display: block;
+      max-width: 92%;
+      max-height: 90vh;
+      border-radius: 16px;
+    }
+
+    .modal-content:hover {
+      cursor: zoom-out;
+    }
+
+    #copyAlert {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.8);
+      background: var(--accent);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-size: 18px;
+      opacity: 0;
+      z-index: 1000;
+      pointer-events: none;
+      transition: transform 0.4s ease, opacity 0.4s ease;
+    }
+
+    .show-popup {
+      opacity: 1 !important;
+      transform: translate(-50%, -50%) scale(1) !important;
+    }
+
+    @media screen and (max-width: 600px) {
+      .modal-content {
+        width: 95%;
+      }
+
+      .container {
+        padding: 28px 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="matrixEffect"></canvas>
+
+  <div class="container">
+    <h1 class="glitch" data-text="Payment By Vann Host">Payment By Vann Host</h1>
+    <p class="subtitle">Silakan pilih salah satu metode pembayaran</p>
+
+    <img src="https://files.catbox.moe/j0fd02.jpg" class="qris-img" id="qrisImage" alt="QRIS">
+    <p class="note">Klik gambar di atas untuk perbesar / screenshot</p>
+
+    <div class="payment-method">
+      <img src="https://img1.pixhost.to/images/5551/595708376_levvihosting.jpg" alt="Dana">
+      <input type="text" value="085854642521" id="dana" readonly>
+      <button onclick="copyText('dana')"><i class="fas fa-copy"></i> COPY</button>
+    </div>
+
+    <div class="payment-method">
+      <img src="https://files.catbox.moe/pczy7t.jpg" alt="OVO">
+      <input type="text" value="081553671793" id="ovo" readonly>
+      <button onclick="copyText('ovo')"><i class="fas fa-copy"></i> COPY</button>
+    </div>
+
+    <div class="payment-method">
+      <img src="https://files.catbox.moe/3gig7z.jpg" alt="GoPay">
+      <input type="text" value="081553671793" id="gopay" readonly>
+      <button onclick="copyText('gopay')"><i class="fas fa-copy"></i> COPY</button>
+    </div>
+
+    <button class="main-button" onclick="downloadQRIS()"><i class="fas fa-download"></i> Download QRIS</button>
+    <button class="main-button" onclick="window.location.href='https://wa.me/6285607618334'"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+    <button class="main-button" onclick="window.location.href='https://whatsapp.com/channel/0029Vb4cYpqFHWq6JOjnzC15'"><i class="fas fa-star"></i> Testimoni</button>
+
+    <div class="footer">&copy; 2025 Payment System by <strong>Vann Host</strong>. All rights reserved.</div>
+  </div>
+
+  <div id="modal" class="modal" onclick="closeModal()">
+    <img class="modal-content" id="modalImage">
+  </div>
+
+  <div id="copyAlert">Berhasil Disalin!</div>
+
+  <script>
+    function copyText(id) {
+      const text = document.getElementById(id).value;
+      navigator.clipboard.writeText(text).then(() => {
+        const alert = document.getElementById("copyAlert");
+        alert.classList.remove("show-popup");
+        void alert.offsetWidth;
+        alert.classList.add("show-popup");
+        setTimeout(() => {
+          alert.classList.remove("show-popup");
+        }, 2000);
+      });
+    }
+
+    function downloadQRIS() {
+      fetch('https://files.catbox.moe/j0fd02.jpg')
+        .then(response => response.blob())
+        .then(blob => {
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.style.display = 'none';
+          a.href = url;
+          a.download = 'qris.jpg';
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(a);
+        })
+        .catch(() => alert('Gagal mengunduh QRIS. Coba lagi.'));
+    }
+
+    const qrisImage = document.getElementById("qrisImage");
+    const modal = document.getElementById("modal");
+    const modalImg = document.getElementById("modalImage");
+
+    qrisImage.onclick = function () {
+      modal.style.display = "block";
+      modalImg.src = this.src;
+    }
+
+    function closeModal() {
+      modal.style.display = "none";
+    }
+
+    // MATRIX EFFECT
+    const canvas = document.getElementById("matrixEffect");
+    const ctx = canvas.getContext("2d");
+    canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth;
+
+    const letters = "����������������������������������0123456789";
+    const fontSize = 14;
+    const columns = canvas.width / fontSize;
+    const drops = Array.from({ length: columns }, () => 1);
+
+    function drawMatrix() {
+      ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#00ffd5";
+      ctx.font = fontSize + "px monospace";
+      drops.forEach((y, i) => {
+        const text = letters.charAt(Math.floor(Math.random() * letters.length));
+        ctx.fillText(text, i * fontSize, y * fontSize);
+        drops[i] = y * fontSize > canvas.height && Math.random() > 0.975 ? 0 : y + 1;
+      });
+    }
+
+    setInterval(drawMatrix, 50);
+
+    window.addEventListener("resize", () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+
+    // TELEGRAM INTEGRATION
+function sendToTelegram() {
+  const dana = document.getElementById("dana").value;
+  const ovo = document.getElementById("ovo").value;
+  const gopay = document.getElementById("gopay").value;
+
+  const message = `
+<b>Payment Request:</b>
+<b>Dana:</b> ${dana}
+<b>OVO:</b> ${ovo}
+<b>GoPay:</b> ${gopay}
+<b>Waktu:</b> ${new Date().toLocaleString()}
+`;
+
+  const token = '7601438243:AAGj1BGtY9Pk8Qs5QIN0zvx3PVgojpjgS78';
+  const chat_id = '7913957518';
+  const url = `https://api.telegram.org/bot${token}/sendMessage`;
+
+  fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      chat_id: chat_id,
+      text: message,
+      parse_mode: 'HTML'
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log('Telegram response:', data);
+  })
+  .catch(() => console.error('Gagal mengirim ke Telegram'));
+}
+
+// Kirim otomatis saat halaman selesai dimuat
+window.addEventListener("load", () => {
+  sendToTelegram();
+});
+  </script>
+</body>
+</html>
